@@ -1,2 +1,6 @@
 Intermediates/Debug/vc140.idb
 *.tlog
+*.obj
+*.pdb
+Intermediates/Debug/TrinoTet OpenGL 3D.log
+*.exe
