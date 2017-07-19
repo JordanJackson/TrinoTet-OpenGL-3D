@@ -34,7 +34,11 @@ bool Game::Initialize()
 
 bool Game::Load()
 {
+	// Load shaders
 	ResourceManager::LoadShader("Shaders/standard.vert", "Shaders/standard.frag", nullptr, "Standard");
+
+	// Load textures
+	ResourceManager::LoadTexture("Resources/Textures/container2_specular.png", GL_FALSE, "Square");
 
 	GameObject block;
 	block.AddComponent(new MeshRenderer());
