@@ -1,5 +1,7 @@
 #include "Material.h"
 
+#include <iostream>
+
 Material::Material()
 	: shader(nullptr), diffuse(nullptr)
 {
@@ -9,13 +11,12 @@ Material::Material()
 Material::Material(Shader& shader, Texture& diffuse)
 	: shader(&shader), diffuse(&diffuse)
 {
-
+	std::cout << "Material Constructor: " << this->shader->ID << std::endl;
 }
 
-void Material::SetActive()
+Shader& Material::SetActive()
 {
-	//shader->Use();
-
-	check_gl_error();
+	//std::cout << shader->ID << std::endl;
+	return shader->Use();
 	// bind textures etc.
 }

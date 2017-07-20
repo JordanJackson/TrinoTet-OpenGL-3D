@@ -5,6 +5,7 @@
 Shader& Shader::Use()
 {
 	glUseProgram(this->ID);
+	//check_gl_error();
 	return *this;
 }
 
@@ -31,11 +32,13 @@ void Shader::Compile(const GLchar* vertexSource, const GLchar* fragmentSource, c
 	}
 	// Shader Program
 	this->ID = glCreateProgram();
+	check_gl_error();
 	glAttachShader(this->ID, sVertex);
 	glAttachShader(this->ID, sFragment);
 	if (geometrySource != nullptr)
 		glAttachShader(this->ID, gShader);
 	glLinkProgram(this->ID);
+	check_gl_error();
 	CheckCompileErrors(this->ID, "PROGRAM");
 	// Delete the shaders as they're linked into our program now and no longer necessery
 	glDeleteShader(sVertex);

@@ -6,6 +6,18 @@ GameObject::GameObject()
 
 }
 
+GameObject::GameObject(Transform* transform)
+	: transform(transform), components(std::multimap<GLuint, Component*>())
+{
+
+}
+
+GameObject::GameObject(glm::vec3 position, glm::quat rotation, glm::vec3 scale)
+	: transform(new Transform(position, rotation, scale)), components(std::multimap<GLuint, Component*>())
+{
+
+}
+
 GameObject::~GameObject()
 {
 	delete transform;
@@ -69,11 +81,11 @@ Component* GameObject::GetComponentByType(GLuint typeHash)
 	return nullptr;
 }
 
-void GameObject::Render(GLfloat deltaTime)
+void GameObject::Render(glm::mat4 view, glm::mat4 projection, GLfloat deltaTime)
 {
 	for (auto renderable : renderables)
 	{
-		renderable.second->Render(deltaTime);
+		renderable.second->Render(transform->GetMatrix(), view, projection, deltaTime);
 	}
 }
 

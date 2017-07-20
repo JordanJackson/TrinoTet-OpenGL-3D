@@ -41,7 +41,7 @@ void Mesh::Draw()
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
-	check_gl_error();
+	//check_gl_error();
 }
 
 void Mesh::Initialize()
@@ -54,27 +54,32 @@ void Mesh::Initialize()
 	// Vertex Buffer
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+	check_gl_error();
 	// Element (Index) Buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
-
+	check_gl_error();
 	// Bone Buffer
 
 	// Vertex Positions
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)0);
+	check_gl_error();
 	// Vertex Normals
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, Normals));
+	check_gl_error();
 	// Vertex Texture Coords
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, TexCoords));
+	check_gl_error();
 	// Vertex Bone Data
 	// Bone ID
 	// Bone Weight
 	
 	// unbind VAO
 	glBindVertexArray(0);
+	check_gl_error();
 }
 
 

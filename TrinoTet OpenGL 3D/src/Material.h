@@ -8,7 +8,8 @@
 
 class Material
 {
-private:
+	// change back to private
+public:
 	Shader* shader;
 	Texture* diffuse;
 
@@ -16,7 +17,7 @@ public:
 	Material();
 	Material(Shader& shader, Texture& diffuse);
 
-	void SetActive();
+	Shader& SetActive();
 };
 
 #endif

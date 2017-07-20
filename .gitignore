@@ -4,3 +4,4 @@ Intermediates/Debug/vc140.idb
 *.pdb
 Intermediates/Debug/TrinoTet OpenGL 3D.log
 *.exe
+.vs/TrinoTet OpenGL 3D/v14/.suo

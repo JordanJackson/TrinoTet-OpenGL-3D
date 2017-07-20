@@ -9,6 +9,9 @@
 #include <GLFW/glfw3.h>
 
 #include "GameObject.h"
+#include "Material.h"
+#include "Mesh.h"
+#include "MeshRenderer.h"
 #include "Transform.h"
 
 class Game
@@ -27,10 +30,14 @@ public:
 
 
 	GameObject* go;
+	Material* cubeMaterial;
+	Mesh* cubeMesh;
+	MeshRenderer* cubeMeshRenderer;
 
 	bool Initialize();
 	bool Load();
 	void Loop();
+	void Close();
 };
 
 #endif

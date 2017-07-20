@@ -6,8 +6,6 @@
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
 
-
-
 Game::Game()
 	: window(nullptr)
 {
@@ -25,6 +23,10 @@ bool Game::Initialize()
 	{
 		return false;
 	}
+
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	
 
 	window = glfwCreateWindow(540, 800, "TrinoTet3D", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
@@ -91,40 +93,16 @@ bool Game::Load()
 		Vertex(glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)),
 	};
 
-	Mesh* cubeMesh = new Mesh(cubeVertices);
+	cubeMesh = new Mesh(cubeVertices);
 	_mesh = new Mesh(cubeVertices);
-	Material* cubeMaterial = new Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Square"));
-	MeshRenderer* cubeMeshRenderer = new MeshRenderer(*cubeMaterial, *cubeMesh);
-
+	cubeMaterial = new Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Square"));
+	cubeMeshRenderer = new MeshRenderer(*cubeMaterial, *cubeMesh);
+	std::cout << "Game.cpp: " << cubeMaterial->shader->ID << std::endl;
 	go = new GameObject();
 	go->AddComponent(cubeMeshRenderer);
-	//GLuint NUM_OBJECTS = 1000;
-	//std::vector<GameObject*> objectList = std::vector<GameObject*>();
-	//std::cout << glfwGetTime() << std::endl;
-	//for (int i = 0; i < NUM_OBJECTS; i++)
-	//{
-	//	GameObject* go = new GameObject();
-	//	go->AddComponent(new MeshRenderer());
-	//	objectList.push_back(go);
-	//}
-	//std::cout << glfwGetTime() << std::endl;
-	//for (int i = 0; i < objectList.size(); i++)
-	//{
-	//	objectList[i]->RemoveComponent(typeid((Component*) new MeshRenderer()).hash_code());
-	//}
-	//std::cout << glfwGetTime() << std::endl;
 
-	//GameObject block;
-	//std::cout << glfwGetTime() << std::endl;
-	//block.AddComponent(new MeshRenderer());
-	//std::cout << glfwGetTime() << std::endl;
-	//block.RemoveComponent(typeid((Component*)new MeshRenderer()).hash_code());
-	//std::cout << glfwGetTime() << std::endl;
+	std::cout << "Break" << std::endl;
 
-	//GameObject go2;
-	//go2.AddComponent(new MeshRenderer());
-
-	// loading successful
 	return true;
 }
 
@@ -195,30 +173,86 @@ void Game::Loop()
 	glEnableVertexAttribArray(2);
 	glBindVertexArray(0);
 
+	std::vector<Vertex> localVerts =
+	{
+		Vertex(glm::vec3(-0.5f, -0.5f,  -0.5f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2(0.0f, 0.0f)),
+		Vertex(glm::vec3(0.5f,  -0.5f,  -0.5f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2(1.0f, 0.0f)),
+		Vertex(glm::vec3(0.5f,  0.5f,	-0.5f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2(1.0f, 1.0f)),
+		Vertex(glm::vec3(0.5f,  0.5f,	-0.5f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2(1.0f, 1.0f)),
+		Vertex(glm::vec3(-0.5f, 0.5f,	-0.5f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2(0.0f, 1.0f)),
+		Vertex(glm::vec3(-0.5f, -0.5f,  -0.5f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2(0.0f, 0.0f)),
+
+		Vertex(glm::vec3(-0.5f,  -0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f)),
+		Vertex(glm::vec3(0.5f,  -0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f)),
+		Vertex(glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
+		Vertex(glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f)),
+		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f)),
+		Vertex(glm::vec3(-0.5f,  -0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f)),
+
+		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 0.0f)),
+		Vertex(glm::vec3(-0.5f,  0.5f,  -0.5f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 1.0f)),
+		Vertex(glm::vec3(-0.5f,  -0.5f,  -0.5f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 1.0f)),
+		Vertex(glm::vec3(-0.5f,  -0.5f,  -0.5f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 1.0f)),
+		Vertex(glm::vec3(-0.5f,  -0.5f,  0.5f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 0.0f)),
+		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 0.0f)),
+
+		Vertex(glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 0.0f)),
+		Vertex(glm::vec3(0.5f,  0.5f,  -0.5f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 1.0f)),
+		Vertex(glm::vec3(0.5f,  -0.5f,  -0.5f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 1.0f)),
+		Vertex(glm::vec3(0.5f,  -0.5f, -0.5f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 1.0f)),
+		Vertex(glm::vec3(0.5f,  -0.5f,  0.5f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 0.0f)),
+		Vertex(glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 0.0f)),
+
+		Vertex(glm::vec3(-0.5f,  -0.5f,  -0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(0.0f, 1.0f)),
+		Vertex(glm::vec3(0.5f,  -0.5f,  -0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(1.0f, 1.0f)),
+		Vertex(glm::vec3(0.5f,  -0.5f,  0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(1.0f, 0.0f)),
+		Vertex(glm::vec3(0.5f,  -0.5f,  0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(1.0f, 0.0f)),
+		Vertex(glm::vec3(-0.5f,  -0.5f,  0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(0.0f, 0.0f)),
+		Vertex(glm::vec3(-0.5f,  -0.5f,  -0.5f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(0.0f, 1.0f)),
+
+		Vertex(glm::vec3(-0.5f,  0.5f,  -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)),
+		Vertex(glm::vec3(0.5f,  0.5f,  -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)),
+		Vertex(glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)),
+		Vertex(glm::vec3(0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)),
+		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)),
+		Vertex(glm::vec3(-0.5f,  0.5f,  -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)),
+	};
+
+	GameObject block = GameObject();
+	Mesh m = Mesh(localVerts);
+	Material mat = Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Square"));
+	MeshRenderer mRenderer = MeshRenderer(mat, m);
+	block.AddComponent(&mRenderer);
+
+
 	while (!glfwWindowShouldClose(window))
 	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glfwPollEvents();
 		
 		go->Update(0.1f);
-
-		glm::mat4 model = glm::mat4();
+		block.transform->Translate(glm::vec3(0.0f, 0.0f, -0.01f));
+		block.transform->Rotate(0.1f, glm::vec3(0.0f, 1.0f, 0.0f));
+	    
 		glm::mat4 proj = glm::perspective(45.0f, width / height, 0.1f, 100.0f);
+
 		glm::mat4 view = glm::mat4();
 
 		glClearColor(0.0f, 0.2f, 0.35f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT );
 
-		//ResourceManager::GetShader("Standard").Use();
-		//_mesh->Draw();
 
-		//glBindVertexArray(CubeVAO);
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
-		//glBindVertexArray(0);
-
-		go->Render(0.1f);
+		block.Render(view, proj, 0.1f);
+		check_gl_error();
 
 
 		glfwSwapBuffers(window);
 	}
+}
+
+void Game::Close()
+{
+	ResourceManager::Clear();
+
+	glfwTerminate();
 }

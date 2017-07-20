@@ -5,6 +5,7 @@
 #include <map>
 
 #include <GL/glew.h>
+#include <glm/glm.hpp>
 
 #include "Component.h"
 #include "Mesh.h"
@@ -14,12 +15,16 @@
 class GameObject
 {
 private:
-	Transform* transform;
 	std::multimap<GLuint, Component*> components;
 	std::multimap<GLuint, IRenderable*> renderables;
 
 public:
+	Transform* transform;
+
+public:
 	GameObject();
+	GameObject(Transform* transform);
+	GameObject(glm::vec3 position, glm::quat rotation, glm::vec3 scale);
 	~GameObject();
 
 	void AddComponent(Component* component);
@@ -27,7 +32,7 @@ public:
 
 	Component* GetComponentByType(GLuint typeHash);
 
-	virtual void Render(GLfloat deltaTime);
+	virtual void Render(glm::mat4 view, glm::mat4 projection, GLfloat deltaTime);
 	virtual void Update(GLfloat deltaTime);
 };
 
