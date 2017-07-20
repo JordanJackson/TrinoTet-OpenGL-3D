@@ -11,7 +11,7 @@ class Component
 public:
 	virtual ~Component();
 
-	virtual void Update(GLfloat deltaTime) = 0;
+	virtual void Update(GLfloat deltaTime) {};
 };
 
 #endif

@@ -7,6 +7,8 @@
 #include <GL/glew.h>
 
 #include "Component.h"
+#include "Mesh.h"
+#include "IRenderable.h"
 #include "Transform.h"
 
 class GameObject
@@ -14,6 +16,7 @@ class GameObject
 private:
 	Transform* transform;
 	std::multimap<GLuint, Component*> components;
+	std::multimap<GLuint, IRenderable*> renderables;
 
 public:
 	GameObject();
@@ -24,6 +27,7 @@ public:
 
 	Component* GetComponentByType(GLuint typeHash);
 
+	virtual void Render(GLfloat deltaTime);
 	virtual void Update(GLfloat deltaTime);
 };
 
