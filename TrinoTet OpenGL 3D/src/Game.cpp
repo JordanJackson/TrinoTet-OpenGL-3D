@@ -6,6 +6,8 @@
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
 
+bool keys[GLFW_KEY_LAST];
+
 Game::Game()
 	: window(nullptr)
 {
@@ -30,6 +32,8 @@ bool Game::Initialize()
 
 	window = glfwCreateWindow(540, 800, "TrinoTet3D", nullptr, nullptr);
 	glfwMakeContextCurrent(window);
+
+	glfwSetKeyCallback(window, key_callback);
 
 	glewExperimental = GL_TRUE;
 	if (!glewInit())
@@ -94,7 +98,7 @@ bool Game::Load()
 	};
 
 	cubeMesh = new Mesh(cubeVertices);
-	_mesh = new Mesh(cubeVertices);
+
 	cubeMaterial = new Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Square"));
 	cubeMeshRenderer = new MeshRenderer(*cubeMaterial, *cubeMesh);
 	std::cout << "Game.cpp: " << cubeMaterial->shader->ID << std::endl;
@@ -218,21 +222,36 @@ void Game::Loop()
 		Vertex(glm::vec3(-0.5f,  0.5f,  -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)),
 	};
 
-	GameObject block = GameObject();
+	std::vector<GameObject*> gameObjects;
+
+	GameObject* block = new GameObject(glm::vec3(0.0f, 0.0f, -10.0f), glm::quat(), glm::vec3(1.0f));
 	Mesh m = Mesh(localVerts);
 	Material mat = Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Square"));
 	MeshRenderer mRenderer = MeshRenderer(mat, m);
-	block.AddComponent(&mRenderer);
+	block->AddComponent(&mRenderer);
 
+	gameObjects.push_back(block);
+	int NUM_BLOCKS = 3;
+	
+	for (int i = 0; i < 3; i++)
+	{
+		GameObject* childBlock = new GameObject(glm::vec3(1.0f * (i+ 1), 0.0f, 0.0f), glm::quat(), glm::vec3(0.25f));
+		childBlock->AddComponent(new MeshRenderer(mat, m));
+		block->transform->AddChild(*childBlock->transform);
+		gameObjects.push_back(childBlock);
+	}
 
 	while (!glfwWindowShouldClose(window))
 	{
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glfwPollEvents();
 		
+		ProcessInput();
+
 		go->Update(0.1f);
-		block.transform->Translate(glm::vec3(0.0f, 0.0f, -0.01f));
-		block.transform->Rotate(0.1f, glm::vec3(0.0f, 1.0f, 0.0f));
+
+		block->transform->Rotate(0.1f, glm::vec3(0.0f, 1.0f, 0.0f));
+		block->transform->Translate(glm::vec3(0.0f, 0.0f, 0.1f * (float)sin(glfwGetTime())));
 	    
 		glm::mat4 proj = glm::perspective(45.0f, width / height, 0.1f, 100.0f);
 
@@ -242,7 +261,10 @@ void Game::Loop()
 		glClear(GL_COLOR_BUFFER_BIT );
 
 
-		block.Render(view, proj, 0.1f);
+		for (int i = 0; i < gameObjects.size(); i++)
+		{
+			gameObjects[i]->Render(view, proj, 0.01f);
+		}
 		check_gl_error();
 
 
@@ -255,4 +277,24 @@ void Game::Close()
 	ResourceManager::Clear();
 
 	glfwTerminate();
+}
+
+void Game::key_callback(GLFWwindow* window, int keycode, int scancode, int action, int mods)
+{
+	if (action == GLFW_PRESS)
+	{
+		keys[keycode] = true;
+	}
+	else
+	{
+		keys[keycode] = false;
+	}
+}
+
+void Game::ProcessInput()
+{
+	if (keys[GLFW_KEY_ESCAPE])
+	{
+		glfwSetWindowShouldClose(window, GL_TRUE);
+	}
 }

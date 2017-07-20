@@ -22,8 +22,6 @@ private:
 	GLfloat width = 540;
 	GLfloat height = 800;
 
-	Mesh* _mesh;
-
 public:
 	Game();
 	~Game();
@@ -38,6 +36,10 @@ public:
 	bool Load();
 	void Loop();
 	void Close();
+	void ProcessInput();
+
+private:
+	static void key_callback(GLFWwindow* window, int keycode, int scancode, int action, int mods);
 };
 
 #endif
