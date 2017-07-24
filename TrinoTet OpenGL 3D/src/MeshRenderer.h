@@ -6,7 +6,7 @@
 #include "IRenderable.h"
 #include "Material.h"
 #include "Mesh.h"
-
+#include "Transform.h"
 
 class MeshRenderer : public Component, public IRenderable
 {
@@ -19,7 +19,7 @@ public:
 	MeshRenderer(Material& material, Mesh& mesh);
 	~MeshRenderer();
 
-	virtual void Render(glm::mat4 model, glm::mat4 view, glm::mat4 projection, GLfloat deltaTime) override;
+	virtual void Render(glm::mat4 view, glm::mat4 projection) override;
 	virtual void Update(GLfloat deltaTime) override;
 };
 

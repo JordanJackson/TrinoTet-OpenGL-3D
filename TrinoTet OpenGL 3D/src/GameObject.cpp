@@ -32,20 +32,10 @@ void GameObject::AddComponent(Component* component)
 	{
 		delete (*it).second;
 	}
-
+	component->gameObject = this;
+	component->transform = this->transform;
+	// add to map
 	components.insert(std::pair<GLuint, Component*>(typeHash, component));
-
-	IRenderable* renderable = dynamic_cast<IRenderable*>(component);
-	if (renderable != nullptr)
-	{
-		auto itRen = renderables.find(typeHash);
-		if (itRen != renderables.end())
-		{
-			delete (*itRen).second;
-		}
-
-		renderables.insert(std::pair<GLuint, IRenderable*>(typeHash, renderable));
-	}
 }
 
 void GameObject::RemoveComponent(GLuint typeHash)
@@ -53,16 +43,6 @@ void GameObject::RemoveComponent(GLuint typeHash)
 	auto it = components.find(typeHash);
 	if (it != components.end())
 	{
-		IRenderable* renderable = dynamic_cast<IRenderable*>((*it).second);
-		if (renderable != nullptr)
-		{
-			auto itRen = renderables.find(typeHash);
-			if (itRen != renderables.end())
-			{
-				renderables.erase(typeHash);
-			}
-		}
-
 		delete (*it).second;
 		components.erase(typeHash);
 	}
@@ -79,14 +59,6 @@ Component* GameObject::GetComponentByType(GLuint typeHash)
 	}
 
 	return nullptr;
-}
-
-void GameObject::Render(glm::mat4 view, glm::mat4 projection, GLfloat deltaTime)
-{
-	for (auto renderable : renderables)
-	{
-		renderable.second->Render(transform->GetMatrix(), view, projection, deltaTime);
-	}
 }
 
 void GameObject::Update(GLfloat deltaTime)

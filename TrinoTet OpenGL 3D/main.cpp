@@ -8,6 +8,7 @@ int main()
 	trinoTet.Load();
 	std::cout << "Break" << std::endl;
 	trinoTet.Loop();
+	trinoTet.Close();
 
 	return 0;
 }

@@ -26,12 +26,6 @@ public:
 	Game();
 	~Game();
 
-
-	GameObject* go;
-	Material* cubeMaterial;
-	Mesh* cubeMesh;
-	MeshRenderer* cubeMeshRenderer;
-
 	bool Initialize();
 	bool Load();
 	void Loop();

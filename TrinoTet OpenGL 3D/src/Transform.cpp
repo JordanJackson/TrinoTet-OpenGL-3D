@@ -1,25 +1,25 @@
 #include "Transform.h"
 
 Transform::Transform()
-	: position(glm::vec3(0.0f)), rotation(glm::quat()), scale(glm::vec3(1.0f))
+	: position(glm::vec3(0.0f)), rotation(glm::quat()), scale(glm::vec3(1.0f)), dirtyFlag(true)
 {
 	ComputeMatrix(glm::mat4());
 }
 
 Transform::Transform(glm::vec3 position, glm::quat rotation, glm::vec3 scale)
-	: position(position), rotation(rotation), scale(scale)
+	: position(position), rotation(rotation), scale(scale), dirtyFlag(true)
 {
 	ComputeMatrix(glm::mat4());
 }
 
 Transform::Transform(Transform* parent)
-	: position(glm::vec3(0.0f)), rotation(glm::quat()), scale(glm::vec3(1.0f)), parent(parent)
+	: position(glm::vec3(0.0f)), rotation(glm::quat()), scale(glm::vec3(1.0f)), parent(parent), dirtyFlag(true)
 {
 	ComputeMatrix(parent->GetMatrix());
 }
 
 Transform::Transform(glm::vec3 position, glm::quat rotation, glm::vec3 scale, Transform* parent)
-	: position(position), rotation(rotation), scale(scale), parent(parent)
+	: position(position), rotation(rotation), scale(scale), parent(parent), dirtyFlag(true)
 {
 	ComputeMatrix(parent->GetMatrix());
 }

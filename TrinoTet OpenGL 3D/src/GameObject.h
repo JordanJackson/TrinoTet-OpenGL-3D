@@ -30,9 +30,10 @@ public:
 	void AddComponent(Component* component);
 	void RemoveComponent(GLuint typeHash);
 
+	inline const Transform& GetTransform() { return transform; }
+
 	Component* GetComponentByType(GLuint typeHash);
 
-	virtual void Render(glm::mat4 view, glm::mat4 projection, GLfloat deltaTime);
 	virtual void Update(GLfloat deltaTime);
 };
 

@@ -1,12 +1,23 @@
 #version 330 core
 
+struct Material
+{
+	sampler2D diffuse;
+	sampler2D specular;
+	sampler2D emission;
+	float shininess;
+	vec4 color;
+};
+
 in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
 
 out vec4 color;
 
+uniform Material material;
+
 void main()
 {
-	color = vec4(1.0, 0.8, 0.25, 1.0);
+	color = texture(material.diffuse, TexCoords) * material.color;
 }

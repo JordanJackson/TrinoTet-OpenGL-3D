@@ -6,16 +6,26 @@
 #include "Shader.h"
 #include "Texture.h"
 
+enum TextureID
+{
+	DIFFUSE,
+	SPECULAR,
+	EMISSION,
+	NORMAL,
+};
+
 class Material
 {
 	// change back to private
 public:
 	Shader* shader;
 	Texture* diffuse;
+	glm::vec4 color;
 
 public:
 	Material();
 	Material(Shader& shader, Texture& diffuse);
+	Material(Shader& shader, Texture& diffuse, glm::vec4 color);
 
 	Shader& SetActive();
 };

@@ -6,12 +6,22 @@
 
 #include <GL/glew.h>
 
+class GameObject;
+class Transform;
+
 class Component
 {
+protected:
+	GameObject* gameObject;
+	Transform* transform;
+
+
 public:
 	virtual ~Component();
 
 	virtual void Update(GLfloat deltaTime) {};
+
+	friend class GameObject;
 };
 
 #endif

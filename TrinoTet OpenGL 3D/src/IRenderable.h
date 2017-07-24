@@ -7,10 +7,22 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "RenderSystem.h"
+
 class IRenderable
 {
 public:
-	virtual void Render(glm::mat4 model, glm::mat4 view, glm::mat4 projection, GLfloat deltaTime) {};
+	IRenderable()
+	{
+		RenderSystem::Instance().AddRenderable(this);
+	}
+
+	virtual ~IRenderable()
+	{
+		RenderSystem::Instance().RemoveRenderable(this);
+	}
+
+	virtual void Render(glm::mat4 view, glm::mat4 projection) = 0;
 };
 
 #endif
