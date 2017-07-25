@@ -2,20 +2,15 @@
 #define _SRC_MESHRENDERER_H_
 #pragma once
 
-#include "Component.h"
-#include "IRenderable.h"
-#include "Material.h"
 #include "Mesh.h"
-#include "Transform.h"
+#include "IRenderable.h"
 
-class MeshRenderer : public Component, public IRenderable
+class MeshRenderer : public IRenderable
 {
 private:
-	Material* material;
 	Mesh* mesh;
 
 public:
-	MeshRenderer();
 	MeshRenderer(Material& material, Mesh& mesh);
 	~MeshRenderer();
 

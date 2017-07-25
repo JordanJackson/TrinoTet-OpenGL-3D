@@ -59,6 +59,8 @@ bool Game::Load()
 	ResourceManager::LoadTexture("Resources/Textures/container2_specular.png", GL_TRUE, "Square");
 	ResourceManager::LoadTexture("Resources/Textures/PixelBlock.png", GL_FALSE, "PixelBlock");
 	ResourceManager::LoadTexture("Resources/Textures/grass.png", GL_TRUE, "Grass");
+	ResourceManager::LoadTexture("Resources/Textures/Cracked-Dirt.jpg", GL_FALSE, "Dirt");
+
 
 	return true;
 }
@@ -121,13 +123,13 @@ void Game::Loop()
 
 	GameObject* block = new GameObject(glm::vec3(0.0f, 0.0f, -10.0f), glm::quat(), glm::vec3(1.0f));
 	Mesh m = Mesh(localVerts);
-	Material mat = Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Grass"), glm::vec4(1.0f, 1.0f, 1.0f, 0.3f));
+	Material mat = Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Grass"), glm::vec4(1.0f, 1.0f, 1.0f, 0.6f));
 	MeshRenderer mRenderer = MeshRenderer(mat, m);
 	block->AddComponent(&mRenderer);
 
 	// Big box
 	GameObject* bigBox = new GameObject(glm::vec3(0.0f, 0.0f, -20.0f), glm::quat(), glm::vec3(5.0f));
-	Material* bigBoxMat = new Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Square"), glm::vec4(0.0f, 0.0f, 1.0f, 0.2f));
+	Material* bigBoxMat = new Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Square"), glm::vec4(0.0f, 0.0f, 1.0f, 0.75f));
 	MeshRenderer* bigBoxRenderer = new MeshRenderer(*bigBoxMat, m);
 	bigBox->AddComponent(bigBoxRenderer);
 
@@ -143,6 +145,14 @@ void Game::Loop()
 		block->transform->AddChild(*childBlock->transform);
 		gameObjects.push_back(childBlock);
 	}
+
+	// ground box
+	GameObject* ground = new GameObject(glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(), glm::vec3(100.0f, 0.1f, 100.0f));
+	Material* groundMaterial = new Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Dirt"), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	MeshRenderer* groundMRenderer = new MeshRenderer(*groundMaterial, m);
+	ground->AddComponent(groundMRenderer);
+	gameObjects.push_back(ground);
+
 
 	// enable blending
 	glEnable(GL_BLEND);
@@ -162,7 +172,8 @@ void Game::Loop()
 
 	while (!glfwWindowShouldClose(window))
 	{
-
+		// TODO this needs to be called only when camera position changes
+		RenderSystem::Instance().SortRenderablesByDistance();
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glfwPollEvents();
 		

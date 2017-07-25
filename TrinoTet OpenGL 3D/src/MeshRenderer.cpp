@@ -1,14 +1,9 @@
 #include "MeshRenderer.h"
 
-MeshRenderer::MeshRenderer()
-{
-
-}
-
 MeshRenderer::MeshRenderer(Material& material, Mesh& mesh)
-	: material(&material), mesh(&mesh)
+	: IRenderable(material), mesh(&mesh)
 {
-	std::cout << "MeshRenderer: " << material.shader->ID << std::endl;
+	//std::cout << "MeshRenderer: " << material.shader->ID << std::endl;
 }
 
 MeshRenderer::~MeshRenderer()

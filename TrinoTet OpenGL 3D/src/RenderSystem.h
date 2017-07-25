@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Camera.h"
+#include "Component.h"
 
 class IRenderable;
 
@@ -15,7 +16,8 @@ private:
 	Camera* camera;
 
 private:
-	std::vector<IRenderable*> renderables;
+	std::vector<IRenderable*> opaqueRenderables;
+	std::vector<IRenderable*> transparentRenderables;
 
 public:
 	// singleton Instance accessor
@@ -27,14 +29,16 @@ public:
 
 	void Render();
 
-	inline const Camera& GetCamera() const { return *camera; }
+	inline Camera& GetCamera() const { return *camera; }
 	inline void SetCamera(Camera* camera) { this->camera = camera; camera->Initialize(); }
 
 	void AddRenderable(IRenderable* renderable);
 	void RemoveRenderable(IRenderable* renderable);
+	void SortRenderablesByDistance();
 
 private:
 	void LoadSettings();
+
 
 // enforces singleton
 private:

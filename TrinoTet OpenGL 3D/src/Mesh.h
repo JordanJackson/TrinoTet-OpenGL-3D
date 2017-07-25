@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "GLDebugger.h"
-#include "Texture.h"
 
 struct Vertex
 {

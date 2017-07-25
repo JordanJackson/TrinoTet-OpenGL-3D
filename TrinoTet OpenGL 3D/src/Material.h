@@ -17,10 +17,11 @@ enum TextureID
 class Material
 {
 	// change back to private
-public:
+private:
 	Shader* shader;
 	Texture* diffuse;
 	glm::vec4 color;
+	bool transparent;
 
 public:
 	Material();
@@ -28,6 +29,8 @@ public:
 	Material(Shader& shader, Texture& diffuse, glm::vec4 color);
 
 	Shader& SetActive();
+
+	inline bool Transparent() { return transparent; }
 };
 
 #endif

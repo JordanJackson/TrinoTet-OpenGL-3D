@@ -1,12 +1,13 @@
-Intermediates/Debug/vc140.idb
+# Builds and Intermediates
+[Bb]uilds
+[Ii]ntermediates
+
+# User-specific files
+*.suo
+*.user
+
 *.tlog
 *.obj
 *.pdb
-Intermediates/Debug/TrinoTet OpenGL 3D.log
 *.exe
-.vs/TrinoTet OpenGL 3D/v14/.suo
-*.db
-*.db
-TrinoTet OpenGL 3D.VC.db
-*.vcxproj
-TrinoTet OpenGL 3D/TrinoTet OpenGL 3D.vcxproj.filters
+

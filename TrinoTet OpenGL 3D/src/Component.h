@@ -21,6 +21,9 @@ public:
 
 	virtual void Update(GLfloat deltaTime) {};
 
+	inline GameObject& GameObject() { return *gameObject; }
+	inline Transform& Transform() { return *transform; }
+
 	friend class GameObject;
 };
 
