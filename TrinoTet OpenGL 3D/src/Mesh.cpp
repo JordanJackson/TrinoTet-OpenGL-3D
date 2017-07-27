@@ -30,6 +30,12 @@ Mesh::Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices)
 	Initialize();
 }
 
+Mesh::Mesh(const aiMesh& assimpMesh)
+	: vertices(std::vector<Vertex>()), indices(std::vector<GLuint>())
+{
+
+}
+
 Mesh::~Mesh()
 {
 

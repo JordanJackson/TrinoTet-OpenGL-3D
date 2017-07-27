@@ -62,6 +62,9 @@ bool Game::Load()
 	ResourceManager::LoadTexture("Resources/Textures/Cracked-Dirt.jpg", GL_FALSE, "Dirt");
 
 
+	// load a Model
+	ResourceManager::LoadModel("Resources/Models/Paladin/Paladin_J_Nordstrom.dae");
+
 	return true;
 }
 
@@ -112,6 +115,7 @@ void Game::Loop()
 		Vertex(glm::vec3(-0.5f,  0.5f,  -0.5f), glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 1.0f)),
 		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f),		glm::vec2(0.0f, 0.0f)),
 	};
+
 
 	// create Camera
 	GameObject* cameraObject = new GameObject(glm::vec3(0.0f, 0.0f, 0.0f), glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(1.0f));

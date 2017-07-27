@@ -11,6 +11,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "Mesh.h"
+#include "Model.h"
 #include "Texture.h"
 #include "Shader.h"
 
@@ -25,14 +27,30 @@ public:
 	// Resource storage
 	static std::map<std::string, Shader>	Shaders;
 	static std::map<std::string, Texture>	Textures;
+	static std::map<std::string, Model>		Models;
+	static std::map<std::string, Mesh>		Meshes;
+
+
 	// Loads (and generates) a shader program from file loading vertex, fragment and geometry shader source code.
 	static Shader		LoadShader(const GLchar* vShaderFile, const GLchar* fShaderFile, const GLchar* gShaderFile, std::string name);
 	// Retrieves a stored shader
 	static Shader		GetShader(std::string name);
+
 	// Loads (and generates) a texture from file
 	static Texture	LoadTexture(const GLchar* file, GLboolean alpha, std::string name);
 	// Retrieves a stored texture
 	static Texture	GetTexture(std::string name);
+
+	// Loads a model from file via Assimp importer
+	static Model LoadModel(const GLchar* file);
+	// Retrieves a stored model
+	static Model GetModel(std::string name);
+
+	// Generates a mesh from Assimp node
+	static Mesh LoadMesh(const aiMesh& node);
+	// Retrieves a stored mesh
+	static Mesh GetMesh(std::string name);
+
 	// Properly de-allocates all loaded resources
 	static void			Clear();
 private:

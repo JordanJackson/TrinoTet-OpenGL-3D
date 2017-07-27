@@ -5,6 +5,9 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+
 #include <iostream>
 #include <vector>
 
@@ -38,8 +41,10 @@ private:
 	std::vector<GLuint> indices;
 
 public:
+	Mesh() = default;
 	Mesh(std::vector<Vertex>& vertices);
 	Mesh(std::vector<Vertex>& vertices, std::vector<GLuint>& indices);
+	Mesh(const aiMesh& assimpMesh);
 	~Mesh();
 
 	void Draw();
