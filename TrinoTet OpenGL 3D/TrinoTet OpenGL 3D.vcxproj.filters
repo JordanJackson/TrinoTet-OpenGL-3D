@@ -104,9 +104,30 @@
     <ClInclude Include="src\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\standard.frag" />
     <None Include="Shaders\standard.vert" />
+    <None Include="Shaders\model_loading.vert" />
+    <None Include="Shaders\lamp.frag" />
+    <None Include="Shaders\lamp.vert" />
+    <None Include="Shaders\model_loading.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Textures\PixelBlock.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\container2_specular.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\Cracked-Dirt.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\Textures\grass.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
