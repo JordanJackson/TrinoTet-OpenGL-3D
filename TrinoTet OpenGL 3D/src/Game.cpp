@@ -56,6 +56,8 @@ bool Game::Load()
 	ResourceManager::LoadShader("Shaders/standard.vert", "Shaders/standard.frag", nullptr, "Standard");
 
 	// Load textures
+	ResourceManager::LoadTexture("Resources/Textures/Default.png", GL_FALSE, "Default");
+	ResourceManager::LoadTexture("Resources/Models/Paladin/textures/Paladin_Diffuse.png", GL_FALSE, "Paladin_Diffuse");
 	ResourceManager::LoadTexture("Resources/Textures/container2_specular.png", GL_TRUE, "Square");
 	ResourceManager::LoadTexture("Resources/Textures/PixelBlock.png", GL_FALSE, "PixelBlock");
 	ResourceManager::LoadTexture("Resources/Textures/grass.png", GL_TRUE, "Grass");
@@ -125,14 +127,15 @@ void Game::Loop()
 
 	std::vector<GameObject*> gameObjects;
 
-	GameObject* block = new GameObject(glm::vec3(0.0f, 0.0f, -10.0f), glm::quat(), glm::vec3(1.0f));
+	GameObject* block = new GameObject(glm::vec3(0.0f, -2.0f, -10.0f), glm::quat(), glm::vec3(0.01f));
 	Mesh m = Mesh(localVerts);
-	Material mat = Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Grass"), glm::vec4(1.0f, 1.0f, 1.0f, 0.6f));
-	MeshRenderer mRenderer = MeshRenderer(mat, m);
+	Mesh paladin = ResourceManager::GetMesh("Paladin_J_NordstromMesh");
+	Material mat = Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Paladin_Diffuse"), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	MeshRenderer mRenderer = MeshRenderer(mat, paladin);
 	block->AddComponent(&mRenderer);
 
 	// Big box
-	GameObject* bigBox = new GameObject(glm::vec3(0.0f, 0.0f, -20.0f), glm::quat(), glm::vec3(5.0f));
+	GameObject* bigBox = new GameObject(glm::vec3(0.0f, 0.0f, -5.0f), glm::quat(), glm::vec3(1.0f));
 	Material* bigBoxMat = new Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Square"), glm::vec4(0.0f, 0.0f, 1.0f, 0.75f));
 	MeshRenderer* bigBoxRenderer = new MeshRenderer(*bigBoxMat, m);
 	bigBox->AddComponent(bigBoxRenderer);
@@ -142,13 +145,13 @@ void Game::Loop()
 	gameObjects.push_back(block);
 	int NUM_BLOCKS = 3;
 	
-	for (int i = 0; i < 3; i++)
-	{
-		GameObject* childBlock = new GameObject(glm::vec3(1.0f * (i+ 1), 0.0f, 0.0f), glm::quat(), glm::vec3(1.0f));
-		childBlock->AddComponent(new MeshRenderer(mat, m));
-		block->transform->AddChild(*childBlock->transform);
-		gameObjects.push_back(childBlock);
-	}
+	//for (int i = 0; i < 3; i++)
+	//{
+	//	GameObject* childBlock = new GameObject(glm::vec3(2.0f * (i+ 1), 0.0f, 0.0f), glm::quat(), glm::vec3(2.0f));
+	//	childBlock->AddComponent(new MeshRenderer(mat, paladin));
+	//	block->transform->AddChild(*childBlock->transform);
+	//	gameObjects.push_back(childBlock);
+	//}
 
 	// ground box
 	GameObject* ground = new GameObject(glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(), glm::vec3(100.0f, 0.1f, 100.0f));

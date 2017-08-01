@@ -47,7 +47,7 @@ public:
 	static Model GetModel(std::string name);
 
 	// Generates a mesh from Assimp node
-	static Mesh LoadMesh(const aiMesh& node);
+	static Mesh LoadMesh(const char* name, const aiMesh& node);
 	// Retrieves a stored mesh
 	static Mesh GetMesh(std::string name);
 

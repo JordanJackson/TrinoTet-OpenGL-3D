@@ -10,6 +10,8 @@
 // Instantiate static variables
 std::map<std::string, Texture>		ResourceManager::Textures;
 std::map<std::string, Shader>		ResourceManager::Shaders;
+std::map<std::string, Model>		ResourceManager::Models;
+std::map<std::string, Mesh>			ResourceManager::Meshes;
 
 
 Shader ResourceManager::LoadShader(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile, std::string name)
@@ -34,13 +36,17 @@ Texture ResourceManager::GetTexture(std::string name)
 	return Textures[name];
 }
 
-void ProcessNode(aiNode& node)
+void ProcessNode(const aiScene* scene, aiNode& node)
 {
-	std::cout << "Mesh Count: " << node.mNumMeshes << std::endl;
+	for (int i = 0; i < node.mNumMeshes; ++i)
+	{
+		aiMesh* mesh = scene->mMeshes[node.mMeshes[i]];
+		ResourceManager::LoadMesh(mesh->mName.C_Str(), *mesh);
+	}
 
 	for (int i = 0; i < node.mNumChildren; ++i)
 	{
-		ProcessNode(*node.mChildren[i]);
+		ProcessNode(scene, *node.mChildren[i]);
 	}
 	std::cout << std::endl;
 }
@@ -58,34 +64,11 @@ Model ResourceManager::LoadModel(const GLchar* file)
 	std::vector<Texture> textures;
 
 	scene = importer.ReadFile(file, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenNormals);
-
-	std::cout << "Loading Model at " << file << std::endl;
-	std::cout << "Mesh Count: " << scene->mNumMeshes << std::endl;
-	for (int i = 0; i < scene->mNumMeshes; i++)
-	{
-		std::cout << "Mesh Name: " << scene->mMeshes[i]->mName.C_Str() << std::endl;
-		std::cout << "Num Vertices: " << scene->mMeshes[i]->mNumVertices << std::endl;
-
-	}
-	std::cout << "Material Count: " << scene->mNumMaterials << std::endl;
-
-	std::cout << "Root Node" << std::endl;
-	std::cout << "Mesh Count: " << scene->mRootNode->mNumMeshes << std::endl;
-	std::cout << "Child Count: " << scene->mRootNode->mNumChildren << std::endl;
 	
-	for (int i = 0; i < scene->mRootNode->mNumChildren; i++)
-	{
-		std::cout << std::endl;
-		std::cout << "Child Node " << i << std::endl;
-		ProcessNode(*scene->mRootNode->mChildren[i]);
-
-	}
-
+	ProcessNode(scene, *scene->mRootNode);
 
 	return Model();
 }
-
-
 
 // Retrieves a stored model
 Model ResourceManager::GetModel(std::string name)
@@ -93,17 +76,48 @@ Model ResourceManager::GetModel(std::string name)
 	return Model();
 }
 
-Mesh ResourceManager::LoadMesh(const aiMesh& node)
+Mesh ResourceManager::LoadMesh(const char* name, const aiMesh& node)
 {
-	for (int i = 0; i < node.mNumVertices; i++)
-	{
+	std::vector<Vertex> vertices;
+	vertices.reserve(node.mNumVertices);
 
+	for (int i = 0; i < node.mNumVertices; ++i)
+	{
+		aiVector3D nodePos = node.mVertices[i];
+		aiVector3D nodeNorm = node.mNormals[i];
+		aiVector3D nodeTex = node.mTextureCoords[0][i];
+
+		vertices.push_back(Vertex(
+			glm::vec3(nodePos.x, nodePos.y, nodePos.z),
+			glm::vec3(nodeNorm.x, nodeNorm.y, nodeNorm.z),
+			glm::vec2(nodeTex.x, nodeTex.y)
+		));
 	}
+	
+
+	std::vector<GLuint> indices;
+	indices.reserve(node.mNumFaces * 3);
+	
+	for (int i = 0; i < node.mNumFaces; ++i)
+	{
+		aiFace face = node.mFaces[i];
+		for (int j = 0; j < face.mNumIndices; j++)
+		{
+			indices.push_back(face.mIndices[j]);
+		}
+	}
+
+	// bones
+	// materials
+	Mesh mesh(vertices, indices);
+	ResourceManager::Meshes.insert(std::pair<std::string, Mesh>(name, mesh));
+
+	return mesh;
 }
 
 Mesh ResourceManager::GetMesh(std::string name)
 {
-	return Mesh();
+	return Meshes[name];
 }
 
 void ResourceManager::Clear()
