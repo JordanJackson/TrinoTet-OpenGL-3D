@@ -19,7 +19,7 @@ protected:
 public:
 	Camera(const glm::mat4& projectionMatrix);
 
-	inline const glm::mat4& GetViewMatrix() const { return viewMatrix; }
+	inline const glm::mat4& GetViewMatrix() { ComputeViewMatrix(); return viewMatrix; }
 	inline const glm::mat4& GetProjectionMatrix() const { return projectionMatrix; }
 
 private:

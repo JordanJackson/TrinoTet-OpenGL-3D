@@ -9,6 +9,13 @@
 #include "Component.h"
 
 class IRenderable;
+class DirectionalLight;
+class PointLight;
+class SpotLight;
+
+#define MAX_DIR_LIGHTS 4
+#define MAX_POINT_LIGHTS 10
+#define MAX_SPOT_LIGHTS 4
 
 class RenderSystem
 {
@@ -18,6 +25,10 @@ private:
 private:
 	std::vector<IRenderable*> opaqueRenderables;
 	std::vector<IRenderable*> transparentRenderables;
+
+	std::vector<DirectionalLight*> directionalLights;
+	std::vector<PointLight*> pointLights;
+	std::vector<SpotLight*> spotLights;
 
 public:
 	// singleton Instance accessor
@@ -35,6 +46,19 @@ public:
 	void AddRenderable(IRenderable* renderable);
 	void RemoveRenderable(IRenderable* renderable);
 	void SortRenderablesByDistance();
+
+	void AddDirLight(DirectionalLight* light);
+	void RemoveDirLight(DirectionalLight* light);
+
+	void AddPointLight(PointLight* light);
+	void RemovePointLight(PointLight* light);
+
+	void AddSpotLight(SpotLight* light);
+	void RemoveSpotLight(SpotLight* light);
+
+	inline std::vector<DirectionalLight*>& DirectionaLights() { return directionalLights; }
+	inline std::vector<PointLight*>& PointLights() { return pointLights; }
+	inline std::vector<SpotLight*>& SpotLights() { return spotLights; }
 
 private:
 	void LoadSettings();

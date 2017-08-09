@@ -25,7 +25,8 @@ GameObject::~GameObject()
 
 void GameObject::AddComponent(Component* component)
 {
-	GLuint typeHash = typeid(component).hash_code();
+	GLuint typeHash = typeid(*component).hash_code();
+	std::cout << typeHash << '\n';
 
 	auto it = components.find(typeHash);
 	if (it != components.end())

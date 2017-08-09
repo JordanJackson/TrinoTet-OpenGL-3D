@@ -52,6 +52,48 @@ void RenderSystem::RemoveRenderable(IRenderable* renderable)
 	// TODO consider changing this to erase/remove idiom
 }
 
+void RenderSystem::AddDirLight(DirectionalLight* light)
+{
+	directionalLights.push_back(light);
+}
+
+void RenderSystem::RemoveDirLight(DirectionalLight* light)
+{
+	auto it = std::find(directionalLights.begin(), directionalLights.end(), light);
+	if (it != directionalLights.end())
+	{
+		directionalLights.erase(it);
+	}
+}
+
+void RenderSystem::AddPointLight(PointLight* light)
+{
+	pointLights.push_back(light);
+}
+
+void RenderSystem::RemovePointLight(PointLight* light)
+{
+	auto it = std::find(pointLights.begin(), pointLights.end(), light);
+	if (it != pointLights.end())
+	{
+		pointLights.erase(it);
+	}
+}
+
+void RenderSystem::AddSpotLight(SpotLight* light)
+{
+	spotLights.push_back(light);
+}
+
+void RenderSystem::RemoveSpotLight(SpotLight* light)
+{
+	auto it = std::find(spotLights.begin(), spotLights.end(), light);
+	if (it != spotLights.end())
+	{
+		spotLights.erase(it);
+	}
+}
+
 void RenderSystem::SortRenderablesByDistance()
 {
 	if (camera == nullptr)

@@ -46,14 +46,29 @@ public:
 	void Scale(float factor);
 	void Scale(const glm::vec3& scale);
 
-	inline const glm::vec3& GetPosition() { return position; }
+	inline const glm::vec3& GetPosition() { RecomputeCheck(); return position; }
 	inline void SetPosition(const glm::vec3& position) { this->position = position; }
 
-	inline const glm::quat& GetRotation() { return rotation; }
+	inline const glm::quat& GetRotation() { RecomputeCheck(); return rotation; }
 	inline void SetRotation(const glm::quat& rotation) { this->rotation = rotation; }
 
-	inline const glm::vec3& GetScale() { return scale; }
+	inline const glm::vec3& GetScale() { RecomputeCheck(); return scale; }
 	inline void SetScale(const glm::vec3& scale) { this->scale = scale; }
+
+	inline void RecomputeCheck() 
+	{ 
+		if (dirtyFlag)
+		{
+			if (parent == nullptr)
+			{
+				ComputeMatrix(glm::mat4());
+			}
+			else
+			{
+				ComputeMatrix(parent->GetMatrix());
+			}
+		}
+	}
 
 	glm::vec3 Forward();
 	glm::vec3 Up();

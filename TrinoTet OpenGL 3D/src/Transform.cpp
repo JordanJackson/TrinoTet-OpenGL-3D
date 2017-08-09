@@ -38,6 +38,7 @@ void Transform::ComputeMatrix(const glm::mat4& parentMatrix)
 {
 	if (dirtyFlag)
 	{
+		//std::cout << "Recomputing Matrix" << '\n';
 		matrix = parentMatrix;
 		matrix = glm::translate(matrix, position);
 		matrix *= glm::toMat4(rotation);
@@ -80,19 +81,7 @@ void Transform::DirtyChildren()
 
 glm::mat4 Transform::GetMatrix()
 {
-	if (dirtyFlag)
-	{
-		if (parent == nullptr)
-		{
-			// Compute Transformation Matrix from identity
-			ComputeMatrix(glm::mat4());
-		}
-		else
-		{
-			// Compute Transformation Matrix from parent transform
-			ComputeMatrix(parent->GetMatrix());
-		}
-	}
+	RecomputeCheck();
 	return matrix;
 }
 

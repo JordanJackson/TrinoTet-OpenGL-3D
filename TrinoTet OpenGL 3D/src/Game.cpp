@@ -6,6 +6,10 @@
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
 #include "RenderSystem.h"
+#include "Light.h"
+#include "DirectionalLight.h"
+#include "PointLight.h"
+#include "SpotLight.h"
 
 bool keys[GLFW_KEY_LAST];
 
@@ -58,6 +62,8 @@ bool Game::Load()
 	// Load textures
 	ResourceManager::LoadTexture("Resources/Textures/Default.png", GL_FALSE, "Default");
 	ResourceManager::LoadTexture("Resources/Models/Paladin/textures/Paladin_Diffuse.png", GL_FALSE, "Paladin_Diffuse");
+	ResourceManager::LoadTexture("Resources/Models/Paladin/textures/Paladin_specular.png", GL_FALSE, "Paladin_Specular");
+	ResourceManager::LoadTexture("Resources/Models/Paladin/textures/Paladin_normal.png", GL_FALSE, "Paladin_Normal");
 	ResourceManager::LoadTexture("Resources/Textures/container2_specular.png", GL_TRUE, "Square");
 	ResourceManager::LoadTexture("Resources/Textures/PixelBlock.png", GL_FALSE, "PixelBlock");
 	ResourceManager::LoadTexture("Resources/Textures/grass.png", GL_TRUE, "Grass");
@@ -66,6 +72,7 @@ bool Game::Load()
 
 	// load a Model
 	ResourceManager::LoadModel("Resources/Models/Paladin/Paladin_J_Nordstrom.dae");
+	ResourceManager::LoadModel("Resources/Models/Paladin_Idle/idle.dae");
 
 	return true;
 }
@@ -118,22 +125,45 @@ void Game::Loop()
 		Vertex(glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f),		glm::vec2(0.0f, 0.0f)),
 	};
 
+	Mesh m = Mesh(localVerts);
 
 	// create Camera
 	GameObject* cameraObject = new GameObject(glm::vec3(0.0f, 0.0f, 0.0f), glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(1.0f));
 	Camera* cameraComponent = new Camera(glm::perspective(45.0f, width / height, 0.1f, 100.0f));
 	cameraObject->AddComponent(cameraComponent);
 	RenderSystem::Instance().SetCamera(cameraComponent);
-
 	std::vector<GameObject*> gameObjects;
 
+	// Directional Light
+	GameObject* dirLightObj = new GameObject(glm::vec3(0.0f), glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(1.0f));
+	DirectionalLight* dLightC = new DirectionalLight(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.2f, 0.2f, 0.2f));
+	dirLightObj->AddComponent(dLightC);
+	Material* lightMat = new Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Default"), glm::vec4(1.0f));
+	dirLightObj->AddComponent(new MeshRenderer(*lightMat, m));
+	gameObjects.push_back(dirLightObj);
+
+	// Point lights
+	for (int i = 0; i < 2; ++i)
+	{
+		for (int j = 0; j < 2; ++j)
+		{
+			GameObject* pointLightObj = new GameObject(glm::vec3(i * 2.0f, 1.0f, j * 2.0f), glm::quat(), glm::vec3(1.0f));
+			pointLightObj->AddComponent(new PointLight(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f), 1.0f, 0.09f, 0.032f));
+			gameObjects.push_back(pointLightObj);
+		}
+	}
+
+
+	gameObjects.push_back(cameraObject);
+
 	GameObject* block = new GameObject(glm::vec3(0.0f, -2.0f, -10.0f), glm::quat(), glm::vec3(0.01f));
-	Mesh m = Mesh(localVerts);
+
 	Mesh paladin = ResourceManager::GetMesh("Paladin_J_NordstromMesh");
 	Material mat = Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Paladin_Diffuse"), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	MeshRenderer mRenderer = MeshRenderer(mat, paladin);
 	block->AddComponent(&mRenderer);
 
+	//cameraObject->transform->SetParent(*block->transform);
 	// Big box
 	GameObject* bigBox = new GameObject(glm::vec3(0.0f, 0.0f, -5.0f), glm::quat(), glm::vec3(1.0f));
 	Material* bigBoxMat = new Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Square"), glm::vec4(0.0f, 0.0f, 1.0f, 0.75f));
@@ -145,21 +175,27 @@ void Game::Loop()
 	gameObjects.push_back(block);
 	int NUM_BLOCKS = 3;
 	
-	//for (int i = 0; i < 3; i++)
-	//{
-	//	GameObject* childBlock = new GameObject(glm::vec3(2.0f * (i+ 1), 0.0f, 0.0f), glm::quat(), glm::vec3(2.0f));
-	//	childBlock->AddComponent(new MeshRenderer(mat, paladin));
-	//	block->transform->AddChild(*childBlock->transform);
-	//	gameObjects.push_back(childBlock);
-	//}
+	for (int i = 0; i < 3; i++)
+	{
+		GameObject* childBlock = new GameObject(glm::vec3(100.0f * (i+ 1), 0.0f, 100.0f * (i + 1)), glm::quat(), glm::vec3(1.0f));
+		childBlock->AddComponent(new MeshRenderer(mat, paladin));
+		block->transform->AddChild(*childBlock->transform);
+		gameObjects.push_back(childBlock);
+	}
 
-	// ground box
-	GameObject* ground = new GameObject(glm::vec3(0.0f, -2.5f, 0.0f), glm::quat(), glm::vec3(100.0f, 0.1f, 100.0f));
+	// ground boxes
+	float offsetPos = -10.0f;
 	Material* groundMaterial = new Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Dirt"), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	MeshRenderer* groundMRenderer = new MeshRenderer(*groundMaterial, m);
-	ground->AddComponent(groundMRenderer);
-	gameObjects.push_back(ground);
-
+	for (int i = 0; i < 10; ++i)
+	{
+		for (int j = 0; j < 10; ++j)
+		{
+			GameObject* groundBlock = new GameObject(glm::vec3(offsetPos + i * 5.0f, -2.5f, offsetPos + j * 5.0f), glm::quat(), glm::vec3(5.0f, 1.0f, 5.0f));
+			MeshRenderer* groundMRenderer = new MeshRenderer(*groundMaterial, m);
+			groundBlock->AddComponent(groundMRenderer);
+			gameObjects.push_back(groundBlock);
+		}
+	}
 
 	// enable blending
 	glEnable(GL_BLEND);
@@ -186,9 +222,8 @@ void Game::Loop()
 		
 		ProcessInput();
 
-		//block->transform->Rotate(0.1f, glm::vec3(0.0f, 1.0f, 0.0f));
-		//block->transform->Translate(glm::vec3(0.0f, 0.0f, 0.1f * (float)sin(glfwGetTime())));
-	    
+		dirLightObj->transform->Rotate(glfwGetTime() * 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
+
 		if (keys[GLFW_KEY_UP])
 		{
 			block->transform->Translate(glm::vec3(0.0f, 0.0f, -0.1f));
@@ -198,14 +233,32 @@ void Game::Loop()
 			block->transform->Translate(glm::vec3(0.0f, 0.0f, 0.1f));
 		}
 
+		if (keys[GLFW_KEY_W])
+		{
+			cameraObject->transform->Translate(cameraObject->transform->Forward() * 0.1f);
+		}
+		if (keys[GLFW_KEY_S])
+		{
+			cameraObject->transform->Translate(-cameraObject->transform->Forward() * 0.1f);
+		}
+
+		if (keys[GLFW_KEY_A])
+		{
+			cameraObject->transform->Translate(cameraObject->transform->Right() * 0.1f);
+		}
+		if (keys[GLFW_KEY_D])
+		{
+			cameraObject->transform->Translate(-cameraObject->transform->Right() * 0.1f);
+		}
+
 		if (keys[GLFW_KEY_Q])
 		{
-			block->transform->Rotate(-0.05f, glm::vec3(0.0f, 1.0f, 0.0f));
+			cameraObject->transform->Rotate(0.05f, glm::vec3(0.0f, 1.0f, 0.0f));
 		}
 
 		if (keys[GLFW_KEY_E])
 		{
-			block->transform->Rotate(0.05f, glm::vec3(0.0f, 1.0f, 0.0f));
+			cameraObject->transform->Rotate(-0.05f, glm::vec3(0.0f, 1.0f, 0.0f));
 		}
 
 		glClearColor(0.0f, 0.2f, 0.35f, 1.0f);
