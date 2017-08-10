@@ -135,23 +135,24 @@ void Game::Loop()
 	std::vector<GameObject*> gameObjects;
 
 	// Directional Light
-	GameObject* dirLightObj = new GameObject(glm::vec3(0.0f), glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(1.0f));
-	DirectionalLight* dLightC = new DirectionalLight(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.2f, 0.2f, 0.2f));
+	GameObject* dirLightObj = new GameObject(glm::vec3(0.0f), glm::angleAxis(glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(1.0f));
+	DirectionalLight* dLightC = new DirectionalLight(glm::vec3(0.6f, 0.6f, 0.6f), glm::vec3(0.15f, 0.15f, 0.15f), glm::vec3(0.2f, 0.2f, 0.2f));
 	dirLightObj->AddComponent(dLightC);
 	Material* lightMat = new Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Default"), glm::vec4(1.0f));
 	dirLightObj->AddComponent(new MeshRenderer(*lightMat, m));
 	gameObjects.push_back(dirLightObj);
 
-	// Point lights
-	for (int i = 0; i < 2; ++i)
-	{
-		for (int j = 0; j < 2; ++j)
-		{
-			GameObject* pointLightObj = new GameObject(glm::vec3(i * 2.0f, 1.0f, j * 2.0f), glm::quat(), glm::vec3(1.0f));
-			pointLightObj->AddComponent(new PointLight(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(1.0f), 1.0f, 0.09f, 0.032f));
-			gameObjects.push_back(pointLightObj);
-		}
-	}
+
+	//// Point lights
+	//for (int i = 0; i < 2; ++i)
+	//{
+	//	for (int j = 0; j < 2; ++j)
+	//	{
+	//		GameObject* pointLightObj = new GameObject(glm::vec3(i * 2.0f, 1.0f, j * 2.0f), glm::quat(), glm::vec3(1.0f));
+	//		pointLightObj->AddComponent(new PointLight(glm::vec3(0.6f, 0.6f, 0.6f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(1.0f), 1.0f, 0.09f, 0.032f));
+	//		gameObjects.push_back(pointLightObj);
+	//	}
+	//}
 
 
 	gameObjects.push_back(cameraObject);
