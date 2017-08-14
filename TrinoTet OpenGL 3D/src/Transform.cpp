@@ -1,25 +1,25 @@
 #include "Transform.h"
 
 Transform::Transform()
-	: position(glm::vec3(0.0f)), rotation(glm::quat()), scale(glm::vec3(1.0f)), dirtyFlag(true)
+	: localPosition(glm::vec3(0.0f)), localRotation(glm::quat()), localScale(glm::vec3(1.0f)), dirtyFlag(true)
 {
 	ComputeMatrix(glm::mat4());
 }
 
 Transform::Transform(glm::vec3 position, glm::quat rotation, glm::vec3 scale)
-	: position(position), rotation(rotation), scale(scale), dirtyFlag(true)
+	: localPosition(position), localRotation(rotation), localScale(scale), dirtyFlag(true)
 {
 	ComputeMatrix(glm::mat4());
 }
 
 Transform::Transform(Transform* parent)
-	: position(glm::vec3(0.0f)), rotation(glm::quat()), scale(glm::vec3(1.0f)), parent(parent), dirtyFlag(true)
+	: localPosition(glm::vec3(0.0f)), localRotation(glm::quat()), localScale(glm::vec3(1.0f)), parent(parent), dirtyFlag(true)
 {
 	ComputeMatrix(parent->GetMatrix());
 }
 
 Transform::Transform(glm::vec3 position, glm::quat rotation, glm::vec3 scale, Transform* parent)
-	: position(position), rotation(rotation), scale(scale), parent(parent), dirtyFlag(true)
+	: localPosition(position), localRotation(rotation), localScale(scale), parent(parent), dirtyFlag(true)
 {
 	ComputeMatrix(parent->GetMatrix());
 }
@@ -31,7 +31,17 @@ Transform::~Transform()
 
 void Transform::Update(GLfloat deltaTime)
 {
-
+	if (dirtyFlag)
+	{
+		if (parent == nullptr)
+		{
+			ComputeMatrix(glm::mat4());
+		}
+		else
+		{
+			ComputeMatrix(parent->GetMatrix());
+		}
+	}
 }
 
 void Transform::ComputeMatrix(const glm::mat4& parentMatrix)
@@ -40,9 +50,9 @@ void Transform::ComputeMatrix(const glm::mat4& parentMatrix)
 	{
 		//std::cout << "Recomputing Matrix" << '\n';
 		matrix = parentMatrix;
-		matrix = glm::translate(matrix, position);
-		matrix *= glm::toMat4(rotation);
-		matrix = glm::scale(matrix, scale);
+		matrix = glm::translate(matrix, localPosition);
+		matrix *= glm::toMat4(localRotation);
+		matrix = glm::scale(matrix, localScale);
 
 		for (int i = 0; i < children.size(); i++)
 		{
@@ -55,8 +65,32 @@ void Transform::ComputeMatrix(const glm::mat4& parentMatrix)
 
 void Transform::SetParent(Transform& parentTransform)
 {
+	if (parent != nullptr)
+	{
+		localPosition += parent->GetPosition();
+		localRotation *= parent->GetRotation();
+		localScale *= parent->GetScale();
+	}
+
 	parent = &parentTransform;
+	localPosition -= parent->GetPosition();
+	localRotation *= glm::inverse(parent->GetRotation());
+	localScale /= parent->GetScale();
 	parentTransform.AddChild(*this);
+}
+
+void Transform::ClearParent()
+{
+	if (parent == nullptr)
+	{
+		return;
+	}
+	localScale *= parent->GetScale();
+	localRotation *= parent->GetRotation();
+	localPosition += parent->GetPosition();
+
+	parent->RemoveChild(*this);
+	parent = nullptr;
 }
 
 void Transform::AddChild(Transform& childTransform)
@@ -87,36 +121,36 @@ glm::mat4 Transform::GetMatrix()
 
 void Transform::Translate(const glm::vec3& movement)
 {
-	position += movement;
+	localPosition += movement;
 	dirtyFlag = true;
 	DirtyChildren();
 }
 
 void Transform::Rotate(float angle, const glm::vec3& axis)
 {
-	rotation *= glm::quat(axis * angle);
+	localRotation *= glm::quat(axis * angle);
 	dirtyFlag = true;
 	DirtyChildren();
 }
 
 void Transform::Scale(float scalar)
 {
-	scale *= scalar;
+	localScale *= scalar;
 	dirtyFlag = true;
 	DirtyChildren();
 }
 
 glm::vec3 Transform::Forward()
 {
-	return rotation * glm::vec3(0.0f, 0.0f, 1.0f);
+	return localRotation * glm::vec3(0.0f, 0.0f, 1.0f);
 }
 
 glm::vec3 Transform::Right()
 {
-	return rotation * glm::vec3(1.0f, 0.0f, 0.0f);
+	return localRotation * glm::vec3(1.0f, 0.0f, 0.0f);
 }
 
 glm::vec3 Transform::Up()
 {
-	return rotation * glm::vec3(0.0f, 1.0f, 0.0f);
+	return localRotation * glm::vec3(0.0f, 1.0f, 0.0f);
 }

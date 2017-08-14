@@ -2,8 +2,18 @@
 
 #include "IRenderable.h"
 
+#include "DirectionalLight.h"
+#include "PointLight.h"
+#include "SpotLight.h"
+
 void RenderSystem::Render()
 {
+
+	// set light uniforms
+	Shader s = ResourceManager::GetShader("Standard");
+	SetLightUniforms(s);
+
+
 	for (auto renderable : opaqueRenderables)
 	{
 		renderable->Render(camera->GetViewMatrix(), camera->GetProjectionMatrix());
@@ -13,6 +23,58 @@ void RenderSystem::Render()
 	{
 		renderable->Render(camera->GetViewMatrix(), camera->GetProjectionMatrix());
 	}
+}
+
+void RenderSystem::SetLightUniforms(Shader& s)
+{
+	// Directional lights
+	int numDirLight = directionalLights.size();
+	s.SetInteger("dirLightCount", numDirLight, GL_TRUE);
+	check_gl_error();
+	for (GLuint i = 0; i < numDirLight; ++i)
+	{
+		std::string idx = std::to_string(i);
+		s.SetVector3f(("dirLights[" + idx + "].direction").c_str(), directionalLights[i]->Transform().Forward(), GL_FALSE);
+		s.SetVector3f(("dirLights[" + idx + "].ambient").c_str(), directionalLights[i]->Ambient(), GL_FALSE);
+		s.SetVector3f(("dirLights[" + idx + "].diffuse").c_str(), directionalLights[i]->Diffuse(), GL_FALSE);
+		s.SetVector3f(("dirLights[" + idx + "].specular").c_str(), directionalLights[i]->Specular(), GL_FALSE);
+	}
+	check_gl_error();
+	// Point lights
+	int numPointLight = pointLights.size();
+	s.SetInteger("pointLightCount", numPointLight, GL_FALSE);
+	check_gl_error();
+	for (GLuint i = 0; i < numPointLight; ++i)
+	{
+		std::string idx = std::to_string(i);
+		s.SetVector3f(("pointLights[" + idx + "].position").c_str(), pointLights[i]->Transform().GetPosition(), GL_FALSE);
+		s.SetVector3f(("pointLights[" + idx + "].ambient").c_str(), pointLights[i]->Ambient(), GL_FALSE);
+		s.SetVector3f(("pointLights[" + idx + "].diffuse").c_str(), pointLights[i]->Diffuse(), GL_FALSE);
+		s.SetVector3f(("pointLights[" + idx + "].specular").c_str(), pointLights[i]->Specular(), GL_FALSE);
+		s.SetFloat(("pointLights[" + idx + "].constant").c_str(), pointLights[i]->Constant(), GL_FALSE);
+		s.SetFloat(("pointLights[" + idx + "].linear").c_str(), pointLights[i]->Linear(), GL_FALSE);
+		s.SetFloat(("pointLights[" + idx + "].quadratic").c_str(), pointLights[i]->Quadratic(), GL_FALSE);
+	}
+	check_gl_error();
+	// Spot lights
+	int numSpotLight = spotLights.size();
+	s.SetInteger("spotLightCount", numSpotLight, GL_FALSE);
+	check_gl_error();
+	for (GLuint i = 0; i < numSpotLight; ++i)
+	{
+		std::string idx = std::to_string(i);
+		s.SetVector3f(("spotLights[" + idx + "].position").c_str(), spotLights[i]->Transform().GetPosition(), GL_FALSE);
+		s.SetVector3f(("spotLights[" + idx + "].direction").c_str(), spotLights[i]->Transform().Forward(), GL_FALSE);
+		s.SetVector3f(("spotLights[" + idx + "].ambient").c_str(), spotLights[i]->Ambient(), GL_FALSE);
+		s.SetVector3f(("spotLights[" + idx + "].diffuse").c_str(), spotLights[i]->Diffuse(), GL_FALSE);
+		s.SetVector3f(("spotLights[" + idx + "].specular").c_str(), spotLights[i]->Specular(), GL_FALSE);
+		s.SetFloat(("spotLights[" + idx + "].constant").c_str(), spotLights[i]->Constant(), GL_FALSE);
+		s.SetFloat(("spotLights[" + idx + "].linear").c_str(), spotLights[i]->Linear(), GL_FALSE);
+		s.SetFloat(("spotLights[" + idx + "].quadratic").c_str(), spotLights[i]->Quadratic(), GL_FALSE);
+		s.SetFloat(("spotLights[" + idx + "].cutOff").c_str(), spotLights[i]->CutOff(), GL_FALSE);
+		s.SetFloat(("spotLights[" + idx + "].outerCutOff").c_str(), spotLights[i]->OuterCutOff(), GL_FALSE);
+	}
+	check_gl_error();
 }
 
 void RenderSystem::AddRenderable(IRenderable* renderable)

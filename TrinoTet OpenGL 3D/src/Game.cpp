@@ -127,12 +127,19 @@ void Game::Loop()
 
 	Mesh m = Mesh(localVerts);
 
+	// list of gameobjects
+	std::vector<GameObject*> gameObjects;
+
 	// create Camera
 	GameObject* cameraObject = new GameObject(glm::vec3(0.0f, 0.0f, 0.0f), glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::vec3(1.0f));
 	Camera* cameraComponent = new Camera(glm::perspective(45.0f, width / height, 0.1f, 100.0f));
 	cameraObject->AddComponent(cameraComponent);
 	RenderSystem::Instance().SetCamera(cameraComponent);
-	std::vector<GameObject*> gameObjects;
+	SpotLight* spotLight = new SpotLight(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.0f)));
+	cameraObject->AddComponent(spotLight);
+
+	gameObjects.push_back(cameraObject);
+	// Spotlight attached to camera
 
 	// Directional Light
 	GameObject* dirLightObj = new GameObject(glm::vec3(0.0f), glm::angleAxis(glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(1.0f));
@@ -142,20 +149,17 @@ void Game::Loop()
 	dirLightObj->AddComponent(new MeshRenderer(*lightMat, m));
 	gameObjects.push_back(dirLightObj);
 
-
-	//// Point lights
-	//for (int i = 0; i < 2; ++i)
-	//{
-	//	for (int j = 0; j < 2; ++j)
-	//	{
-	//		GameObject* pointLightObj = new GameObject(glm::vec3(i * 2.0f, 1.0f, j * 2.0f), glm::quat(), glm::vec3(1.0f));
-	//		pointLightObj->AddComponent(new PointLight(glm::vec3(0.6f, 0.6f, 0.6f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(1.0f), 1.0f, 0.09f, 0.032f));
-	//		gameObjects.push_back(pointLightObj);
-	//	}
-	//}
-
-
-	gameObjects.push_back(cameraObject);
+	// Point lights
+	for (int i = 0; i < 3; ++i)
+	{
+		for (int j = 0; j < 3; ++j)
+		{
+			GameObject* pointLightObj = new GameObject(glm::vec3(i * 15.0f, 1.0f, j * 15.0f), glm::quat(), glm::vec3(0.2f));
+			pointLightObj->AddComponent(new PointLight(glm::vec3(0.6f, 0.6f, 1.0f), glm::vec3(0.4f, 0.4f, 1.0f), glm::vec3(1.0f), 1.0f, 0.09f, 0.032f));
+			pointLightObj->AddComponent(new MeshRenderer(*lightMat, m));
+			gameObjects.push_back(pointLightObj);
+		}
+	}
 
 	GameObject* block = new GameObject(glm::vec3(0.0f, -2.0f, -10.0f), glm::quat(), glm::vec3(0.01f));
 
@@ -164,7 +168,7 @@ void Game::Loop()
 	MeshRenderer mRenderer = MeshRenderer(mat, paladin);
 	block->AddComponent(&mRenderer);
 
-	//cameraObject->transform->SetParent(*block->transform);
+	block->transform->AddChild(*cameraObject->transform);
 	// Big box
 	GameObject* bigBox = new GameObject(glm::vec3(0.0f, 0.0f, -5.0f), glm::quat(), glm::vec3(1.0f));
 	Material* bigBoxMat = new Material(ResourceManager::GetShader("Standard"), ResourceManager::GetTexture("Square"), glm::vec4(0.0f, 0.0f, 1.0f, 0.75f));
@@ -174,15 +178,11 @@ void Game::Loop()
 	gameObjects.push_back(bigBox);
 
 	gameObjects.push_back(block);
-	int NUM_BLOCKS = 3;
-	
-	for (int i = 0; i < 3; i++)
-	{
-		GameObject* childBlock = new GameObject(glm::vec3(100.0f * (i+ 1), 0.0f, 100.0f * (i + 1)), glm::quat(), glm::vec3(1.0f));
-		childBlock->AddComponent(new MeshRenderer(mat, paladin));
-		block->transform->AddChild(*childBlock->transform);
-		gameObjects.push_back(childBlock);
-	}
+
+	GameObject* childBlock = new GameObject(glm::vec3(100.0f, 0.0f, 100.0f), glm::quat(), glm::vec3(0.01f));
+	childBlock->AddComponent(new MeshRenderer(mat, paladin));
+	childBlock->GetTransform().SetParent(block->GetTransform());
+	gameObjects.push_back(childBlock);
 
 	// ground boxes
 	float offsetPos = -10.0f;
@@ -197,6 +197,8 @@ void Game::Loop()
 			gameObjects.push_back(groundBlock);
 		}
 	}
+
+
 
 	// enable blending
 	glEnable(GL_BLEND);
@@ -222,6 +224,11 @@ void Game::Loop()
 		glfwPollEvents();
 		
 		ProcessInput();
+
+		for (auto gameObj : gameObjects)
+		{
+			gameObj->Update(0.1f);
+		}
 
 		dirLightObj->transform->Rotate(glfwGetTime() * 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -260,6 +267,15 @@ void Game::Loop()
 		if (keys[GLFW_KEY_E])
 		{
 			cameraObject->transform->Rotate(-0.05f, glm::vec3(0.0f, 1.0f, 0.0f));
+		}
+
+		if (keys[GLFW_KEY_Y])
+		{
+			childBlock->GetTransform().ClearParent();
+		}
+		if (keys[GLFW_KEY_U])
+		{
+			childBlock->GetTransform().SetParent(block->GetTransform());
 		}
 
 		glClearColor(0.0f, 0.2f, 0.35f, 1.0f);

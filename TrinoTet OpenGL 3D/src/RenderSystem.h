@@ -7,6 +7,7 @@
 
 #include "Camera.h"
 #include "Component.h"
+#include "ResourceManager.h"
 
 class IRenderable;
 class DirectionalLight;
@@ -56,13 +57,13 @@ public:
 	void AddSpotLight(SpotLight* light);
 	void RemoveSpotLight(SpotLight* light);
 
-	inline std::vector<DirectionalLight*>& DirectionaLights() { return directionalLights; }
+	inline std::vector<DirectionalLight*>& DirectionalLights() { return directionalLights; }
 	inline std::vector<PointLight*>& PointLights() { return pointLights; }
 	inline std::vector<SpotLight*>& SpotLights() { return spotLights; }
 
 private:
 	void LoadSettings();
-
+	void SetLightUniforms(Shader& s);
 
 // enforces singleton
 private:

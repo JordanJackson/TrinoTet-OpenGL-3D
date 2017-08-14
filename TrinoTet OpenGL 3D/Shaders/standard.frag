@@ -92,11 +92,11 @@ void main()
 	{
 		result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
 	}
-	//// Spot lights
-	//for (int i = 0; i < spotLightCount; ++i)
-	//{
-	//	result += CalcSpotLight(spotLights[i], norm, FragPos, viewDir);
-	//}
+	// Spot lights
+	for (int i = 0; i < spotLightCount; ++i)
+	{
+		result += CalcSpotLight(spotLights[i], norm, FragPos, viewDir);
+	}
 	// Emission
 	//vec3 emission = vec3(texture(material.emission, TexCoords));
 
@@ -163,9 +163,10 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 	// Combine results
 	vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
 	vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
-	vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoords));
+	//vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoords));
 	ambient *= attenuation * intensity;
 	diffuse *= attenuation * intensity;
-	specular *= attenuation * intensity;
-	return (ambient + diffuse + specular);
+	//specular *= attenuation * intensity;
+	//return (ambient + diffuse + specular);
+	return (ambient + diffuse);
 }
